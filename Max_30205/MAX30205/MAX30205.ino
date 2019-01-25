@@ -29,11 +29,17 @@ SCL - A5 (or SCL)
 
 #include <Wire.h>
 #include "Protocentral_MAX30205.h"
+#include <SoftwareSerial.h>
+
 MAX30205 tempSensor;
+
+SoftwareSerial mySerial(10, 11); // RX, TX
+
 
 void setup() {
   // put your setup code here, to run once:
   Wire.begin();
+  mySerial.begin(9600);
   Serial.begin(9600);
   tempSensor.begin();   // set continuos mode, active mode
 }
@@ -41,7 +47,9 @@ void setup() {
 void loop() {
 
 	float temp = tempSensor.getTemperature(); // read temperature for every 100ms
-	Serial.print(temp ,2);
-	Serial.println("'c" );
-	delay(100);
+	Serial.println(temp ,2);
+	// Serial.println("'c" );
+  // mySerial.println(String(temp));
+  mySerial.println(temp, 2);
+	delay(2000);
 }

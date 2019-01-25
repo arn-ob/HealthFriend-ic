@@ -1,42 +1,9 @@
-//////////////////////////////////////////////////////////////////////////////////////////
-//
-//    Demo code for the MAX30003 breakout board
-//
-//    This example plots the ecg through serial UART on rtoProtocentral max30003 gui with sampling rate of 128 sps
-//
-//    Arduino connections:
-//
-//  |MAX30003 pin label| Pin Function         |Arduino Connection|
-//  |-----------------|:--------------------:|-----------------:|
-//  | MISO            | Slave Out            |  D12             |
-//  | MOSI            | Slave In             |  D11             |
-//  | SCLK            | Serial Clock         |  D13             |
-//  | CS              | Chip Select          |  D7              |
-//  | VCC             | Digital VDD          |  +5V             |
-//  | GND             | Digital Gnd          |  Gnd             |
-//  | FCLK            | 32K CLOCK            |  -               |
-//  | INT1            | Interrupt1           |  -               |
-//  | INT2            | Interrupt2           |  -               |
-//
-//    This software is licensed under the MIT License(http://opensource.org/licenses/MIT).
-//
-//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-//   NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-//   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-//   For information on how to use, visit https://github.com/Protocentral/protocentral_max30003
-//
-/////////////////////////////////////////////////////////////////////////////////////////
+
 
 #include<SPI.h>
 #include <TimerOne.h>
 #include "MAX30003.h"
 
-#include <SoftwareSerial.h>
-
-SoftwareSerial mySerial(2, 3); // RX, TX
 
 #define MAX30003_CS_PIN   7
 #define CLK_PIN          6
@@ -121,30 +88,6 @@ void loop()
   //     Serial.print(rr);
   //     Serial.print(",");
   //     Serial.println(hr);
-
-  DataPacketHeader[0] = 0x0A;
-  DataPacketHeader[1] = 0xFA;
-  DataPacketHeader[2] = 0x0C;
-  DataPacketHeader[3] = 0;
-  DataPacketHeader[4] = 0x02;
-
-  DataPacketHeader[5] = ecgdata;
-  DataPacketHeader[6] = ecgdata >> 8;
-  DataPacketHeader[7] = ecgdata >> 16;
-  DataPacketHeader[8] = ecgdata >> 24;
-
-  DataPacketHeader[9] =  RR ;
-  DataPacketHeader[10] = RR >> 8;
-  DataPacketHeader[11] = 0x00;
-  DataPacketHeader[12] = 0x00;
-
-  DataPacketHeader[13] = HR ;
-  DataPacketHeader[14] = HR >> 8;
-  DataPacketHeader[15] = 0x00;
-  DataPacketHeader[16] = 0x00;
-
-  DataPacketHeader[17] = 0x00;
-  DataPacketHeader[18] = 0x0b;
 
   for (i = 0; i < 19; i++) // transmit the data
   {

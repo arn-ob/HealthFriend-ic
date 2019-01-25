@@ -15,9 +15,10 @@ void setup() {
   // set the data rate for the SoftwareSerial port
   mySerial.begin(9600);
   mySerial.println("Hello, world?");
+  // mySerial.println("Hello, world?");
+  delay(2000);
+
 }
 
 void loop() { // run over and over
-   mySerial.println("Hello, world?");
-  delay(2000);
-}
+   }
