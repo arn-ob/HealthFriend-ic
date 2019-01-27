@@ -20,6 +20,9 @@ void setup() {
  
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
 }
 
 void loop() {
@@ -28,10 +31,16 @@ void loop() {
   digitalWrite(2, LOW);
   digitalWrite(3, LOW);
   delay(5000);
-  // One
+  // One ------------ 2 HIGH
   digitalWrite(2, HIGH);
   delay(5000);
   Serial.println("Data from Part one:");
+  // pin Select
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+  delay(1000);
+  
   SerialRead();
   delay(5000);
   digitalWrite(2, LOW);
@@ -41,15 +50,30 @@ void loop() {
   delay(3000);
   digitalWrite(2, LOW);
   digitalWrite(3, LOW);
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
   delay(3000);
 
-  // Two
+  // Two ----- 3 HIGH
   digitalWrite(3, HIGH);
   delay(5000);
   Serial.println("Data from Part Two:");
+
+  // pin Select
+  digitalWrite(5, HIGH);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+  delay(1000);
+  
   SerialRead();
   delay(5000);
   digitalWrite(3, LOW);
+  
+  // pin Select
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
   delay(2000);
 }
 

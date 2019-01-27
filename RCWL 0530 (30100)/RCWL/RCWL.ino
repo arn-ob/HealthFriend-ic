@@ -1,5 +1,5 @@
 #include "MAX30100.h"
-
+#include <Wire.h>
 MAX30100* pulseOxymeter;
 
 void setup() {
