@@ -10,6 +10,7 @@
 #include <MAX30100_Registers.h>
 #include <MAX30100_SpO2Calculator.h>
 #include <Wire.h>
+#include <Ethernet.h>
 
 #define REPORTING_PERIOD_MS    500
 
@@ -33,6 +34,14 @@ const int GSR = A0;
 int sensorValue = 0;
 int gsr_average = 0;
 
+//~~~~~~~~~~~~~~~~~~~ Ethernet Data
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}; // RESERVED MAC ADDRESS
+EthernetClient client;
+// IPAddress server(192, 168, 1, 1);
+char server[] = "api.stupidarnob.com"; 
+////////////////////////////////////////
+
+
 #define pin_1 2
 #define pin_2 3
 #define pin_3 4
@@ -41,11 +50,12 @@ int gsr_average = 0;
 void setup()
 {
   Serial.begin(115200);
-  
+  EtherINIT();
+
   pinMode(pin_1, INPUT);
   pinMode(pin_2, INPUT);
   pinMode(pin_3, INPUT);
-  Serial.println("System Start System 1");
+  Serial.println("System Start");
 }
 
 
@@ -54,30 +64,96 @@ void loop()
   if (digitalRead(pin_1)) {
     Serial.println("Pin 1 HIGH");
     EMG_func();
-  } else {
-    // Serial.println("Pin 1 LOW");
   }
   if (digitalRead(pin_2)) {
-     Serial.println("Pin 2 HIGH");
-    MAX_30100_func();
-  } else {
-    // Serial.println("Pin 2 LOW");
-  }
+    Serial.println("Pin 2 HIGH");
+    // MAX_30100_func(); // Chip Broken
+  } 
   if (digitalRead(pin_3)) {
      Serial.println("Pin 3 HIGH");
     GSR_func();
-  } else {
-    // Serial.println("Pin 3 LOW");
+  } 
+
+}
+
+/// Ehternet
+void EtherINIT()
+{
+  //Ethernet Data Get ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Ethernet.begin(mac);
+  Serial.println("Initializing Ethernet.");
+  Serial.print("IP Address        : ");
+  Serial.println(Ethernet.localIP());
+  if (client.connect(server, 80))
+  {
+    Serial.println("Connected");
+    client.println();
+    client.println();
+    client.stop();
+  }
+  else
+  {
+    // you didn't get a connection to the server:
+    Serial.println("\nConnection failed\n");
   }
 
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+}
+
+// Sending Data To Server
+void send_date(String s, int data){
+  if (client.connect(server, 80))
+    {
+      client.print("GET /health-friend/api.php?");
+      client.print("s=");
+      client.print(s);
+      client.print("&data=");
+      client.print(data);
+
+      client.println(" HTTP/1.1");
+      client.print("Host: ");
+      client.println(server);
+      client.println("Connection: close");
+      client.println();
+      client.println();
+      client.stop();
+    } else {
+      Serial.println("Data Sending Problem");
+    }
+}
+
+// Sending Data To Server only for hrm
+void send_date_for_hrm(int data, int sp){
+  if (client.connect(server, 80))
+    {
+      client.print("GET /health-friend/api.php?");
+      client.print("s=");
+      client.print("hrm");
+      client.print("&data=");
+      client.print(data);
+       client.print("&sp=");
+      client.print(sp);
+
+
+      client.println(" HTTP/1.1");
+      client.print("Host: ");
+      client.println(server);
+      client.println("Connection: close");
+      client.println();
+      client.println();
+      client.stop();
+    } else {
+      Serial.println("Data Sending Problem");
+    }
 }
 
 
 // EMG Sensor
 void EMG_func() {
   int sensorValue = analogRead(A1);
-   Serial.print("EMG_func");
+  Serial.print("EMG_func");
   Serial.println(sensorValue);
+  send_date("emg", sensorValue);
   delay(1);
 }
 
@@ -93,6 +169,7 @@ void GSR_func() {
   gsr_average = sum / 10;
   Serial.print("gsr_average");
   Serial.println(gsr_average);
+  send_date("gsr", gsr_average);
 }
 /// GSR END ///////////////////////
 
@@ -172,6 +249,7 @@ void display_values()
   Serial.print("| SpO2 ");
   Serial.print(average_SpO2);
   Serial.print("%");
+  send_date_for_hrm(average_beat, average_SpO2);
 }
 
 void calculate_average(int beat, int SpO2)
