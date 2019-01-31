@@ -74,9 +74,6 @@ void loop() {
     Serial.println("MAX30003_func High");
     MAX30003_func();
   }
-   MAX_30205_func();  
-  delay(2000);
-  
 }
 
 /// Ehternet
@@ -103,22 +100,25 @@ void EtherINIT()
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
 
+// Sending Data To Server
 void send_date(String s, int data){
   if (client.connect(server, 80))
     {
-    client.print("GET /health-friend/api.php?");
-    client.print("s=");
-    client.print(s);
-    client.print("&data=");
-    client.print(data);
+      client.print("GET /health-friend/api.php?");
+      client.print("s=");
+      client.print(s);
+      client.print("&data=");
+      client.print(data);
 
-    client.println(" HTTP/1.1");
-    client.print("Host: ");
-    client.println(server);
-    client.println("Connection: close");
-    client.println();
-    client.println();
-    client.stop();
+      client.println(" HTTP/1.1");
+      client.print("Host: ");
+      client.println(server);
+      client.println("Connection: close");
+      client.println();
+      client.println();
+      client.stop();
+    } else {
+      Serial.println("Data Sending Problem");
     }
 }
 
@@ -127,9 +127,7 @@ void MAX_30205_func() {
   float temp = tempSensor.getTemperature(); // read temperature for every 100ms
   Serial.println(temp , 2);
   send_date("temp", temp);
-  // Serial.println("'c" );
-  // mySerial.println(String(temp));
-  delay(100);
+  delay(1000);
 }
 
 
@@ -182,11 +180,10 @@ void MAX30003_func()
     // Serial.write(DataPacketHeader[i]);
   }
 
-  Serial.println(ecgdata / 1000);
-
   // Serial.println(ecgDataSend);
-
+  send_date("ecg", ecgdata / 1000);
   Serial.println(ecgdata / 1000);
+
   delay(8);
 }
 
