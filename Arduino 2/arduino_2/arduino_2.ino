@@ -1,5 +1,5 @@
 // ECG
-// MAX 302
+// MAX 30205
 
 #include <Wire.h>
 #include "Protocentral_MAX30205.h"
