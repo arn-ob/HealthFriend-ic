@@ -45,7 +45,7 @@ void setup()
   pinMode(pin_1, INPUT);
   pinMode(pin_2, INPUT);
   pinMode(pin_3, INPUT);
-  Serial.println("System Start");
+  Serial.println("System Start System 1");
 }
 
 
