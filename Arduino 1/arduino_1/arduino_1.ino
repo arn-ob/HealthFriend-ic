@@ -35,7 +35,7 @@ int sensorValue = 0;
 int gsr_average = 0;
 
 //~~~~~~~~~~~~~~~~~~~ Ethernet Data
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}; // RESERVED MAC ADDRESS
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xEC}; // RESERVED MAC ADDRESS
 EthernetClient client;
 // IPAddress server(192, 168, 1, 1);
 char server[] = "api.stupidarnob.com"; 

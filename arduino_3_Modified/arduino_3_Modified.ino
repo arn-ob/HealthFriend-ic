@@ -84,11 +84,11 @@ void loop() {
   }
   if(digitalRead(4)){
     Serial.println("GSR");
-    MAX30003_func();
+    GSR_func();
   }
   if(digitalRead(5)){
     Serial.println("GSR");
-    MAX30003_func();
+    EMG_func();
   }
 }
 
@@ -113,7 +113,6 @@ void EtherINIT()
     Serial.println("\nConnection failed\n");
   }
 
-  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 }
 
 // Sending Data To Server
