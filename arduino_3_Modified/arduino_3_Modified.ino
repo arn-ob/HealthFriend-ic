@@ -35,6 +35,22 @@ const int GSR = A0;
 int sensorValue = 0;
 int gsr_average = 0;
 
+// BPM
+//  VARIABLES
+int pulsePin = 3;                 // Pulse Sensor purple wire connected to analog pin 0
+int blinkPin = 13;                // pin to blink led at each beat
+int fadePin = 5;                  // pin to do fancy classy fading blink at each beat
+int fadeRate = 3;                 // used to fade LED on with PWM on fadePin
+
+// these variables are volatile because they are used during the interrupt service routine!
+volatile int BPM;                   // used to hold the pulse rate
+volatile int Signal;                // holds the incoming raw data
+volatile int IBI = 600;             // holds the time between beats, must be seeded! 
+volatile boolean Pulse = false;     // true when pulse wave is high, false when it's low
+volatile boolean QS = false;        // becomes true when Arduoino finds a beat.
+
+
+
 //~~~~~~~~~~~~~~~~~~~ Ethernet Data
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED}; // RESERVED MAC ADDRESS
 EthernetClient client;
@@ -49,7 +65,7 @@ void setup() {
   Wire.begin();
   EtherINIT();
   tempSensor.begin();   // set continuos mode, active mode
-
+  pinMode(fadePin,OUTPUT);
   pinMode(MAX30003_CS_PIN, OUTPUT);
   digitalWrite(MAX30003_CS_PIN, HIGH); //disable device
 
@@ -70,7 +86,7 @@ void setup() {
   pinMode(3, INPUT);
   pinMode(4, INPUT);
   pinMode(5, INPUT);
-  
+  pinMode(6, INPUT);
 }
 
 void loop() {
@@ -87,8 +103,12 @@ void loop() {
     GSR_func();
   }
   if(digitalRead(5)){
-    Serial.println("GSR");
+    Serial.println("EMG");
     EMG_func();
+  }
+  if(digitalRead(6)){
+    Serial.println("BPM");
+    BPM_func();
   }
 }
 
@@ -136,6 +156,35 @@ void send_date(String s, int data){
       Serial.println("Data Sending Problem");
     }
 }
+
+// Func
+void BPM_func(){
+  sendDataToProcessing('S', Signal);     // send Processing the raw Pulse Sensor data
+  if (QS == true){                       // Quantified Self flag is true when arduino finds a heartbeat
+        fadeRate = 255;                  // Set 'fadeRate' Variable to 255 to fade LED with pulse
+        sendDataToProcessing('B',BPM);   // send heart rate with a 'B' prefix
+        sendDataToProcessing('Q',IBI);   // send time between beats with a 'Q' prefix
+        QS = false;                      // reset the Quantified Self flag for next time    
+     }
+  
+  ledFadeToBeat();
+  
+  delay(20);                             //  take a break
+}
+
+
+void ledFadeToBeat(){
+    fadeRate -= 15;                         //  set LED fade value
+    fadeRate = constrain(fadeRate,0,255);   //  keep LED fade value from going into negative numbers!
+    analogWrite(fadePin,fadeRate);          //  fade LED
+  }
+
+
+void sendDataToProcessing(char symbol, int data ){
+    Serial.print(symbol);                // symbol prefix tells Processing what type of data is coming
+    send_date("bpm", data);                // the data to send culminating in a carriage return
+  }
+
 
 // GSR
 void GSR_func() {

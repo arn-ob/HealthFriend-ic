@@ -15,7 +15,7 @@ void setup() {
 void loop() {
   //You have to call update with frequency at least 37Hz. But the closer you call it to 100Hz the better, the filter will work.
   pulseoxymeter_t result = pulseOxymeter->update();
-  
+   
   if( result.pulseDetected == true )
   {
     Serial.println("BEAT");
